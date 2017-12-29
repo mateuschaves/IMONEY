@@ -42,6 +42,9 @@ $api->version('v1', function (Router $api) {
         $api->post('change-name/account/{users_id}/{account_id}', 'App\\Http\\Controllers\\AccountsController@change_account_name')->name('change.account.name');
         $api->post('change-balance/account/{users_id}/{account_id}', 'App\\Http\\Controllers\\AccountsController@change_the_amount_of_the_account_balance')->name('change.account.balance');
         $api->post('delete/account/{users_id}/{account_id}', 'App\\Http\\Controllers\\AccountsController@delete_account')->name('delete.account');
+        $api->post('create/categorie/{users_id}/', 'App\\Http\\Controllers\\CategoriesController@create_categories')->name('create.categories');
+        $api->post('update/categorie/{users_id}/{categorie_id}', 'App\\Http\\Controllers\\CategoriesController@update_categories')->name('update.categories');
+        $api->post('delete/categorie/{users_id}/{categorie_id}', 'App\\Http\\Controllers\\CategoriesController@delete_categories')->name('delete.categories');
     });
 
     $api->get('hello', function() {
