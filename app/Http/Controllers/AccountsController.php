@@ -328,9 +328,25 @@ class AccountsController extends Controller
         // Validando os campos
         $data       =   array($users_id);
         $validator  =   Validator::check_empty_fields($data);
-        if(!$validator['status'])
+        if($validator['status'])
         {
             return $validator['response'];
+        }
+        // Verificando a existência dos dados informados
+        $user = User::find($users_id);
+        if(!$user)
+        {
+            return response()->json(['message' => 'User not found']);
+        }
+        // Selecionando todas as contas do usuário informado
+        $accounts = Accounts::where('users_id', $users_id)->get();
+        // Verificando o status da query e informando ao usuário
+        if($accounts)
+        {
+            return response()->json(['accounts' => $accounts]);
+        }else
+        {
+            return response()->json(['message' => 'error']);
         }
     }
 
