@@ -286,11 +286,10 @@ class AccountsController extends Controller
         // Validando os campos
         $data = array($request['account_id'], $users_id);
         $validator = Validator::check_empty_fields($data);
-        if(!$validator['status'])
+        if($validator['status'])
         {
             return $validator['response'];
         }
-
         // Verificando a existência dos dados informados
         $account        =       Accounts::find($request['account_id']);
         $user           =       User::find($users_id);
@@ -299,9 +298,10 @@ class AccountsController extends Controller
             return response()->json(['message' => 'User or account does not exist']);
         }
         // Verificando se a conta é do usuário
-        if($account->users_id != $users_id)
+        $validator = Validator::checks_whether_access_is_allowed($account,$users_id);
+        if($validator['status'])
         {
-            return response()->json(['message' => ' you can only consult your balance'],400);
+           return $validator['response'];
         }
         // Consultado o saldo
         $balance = $account->balance;
