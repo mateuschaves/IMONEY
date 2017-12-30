@@ -48,6 +48,7 @@ $api->version('v1', function (Router $api) {
         $api->post('create/transactions/{users_id}/', 'App\\Http\\Controllers\\TransactionsController@create_transaction')->name('create.transaction');
         $api->post('consult/balance/{users_id}/', 'App\\Http\\Controllers\\AccountsController@check_balance')->name('consult.balance');
         $api->get('accounts/{users_id}/', 'App\\Http\\Controllers\\AccountsController@accounts_list')->name('accounts.list');
+        $api->get('accounts/total/balance/{users_id}/', 'App\\Http\\Controllers\\AccountsController@check_total_balance')->name('accounts.total.balance');
     });
 
     $api->get('hello', function() {

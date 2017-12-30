@@ -336,7 +336,7 @@ class AccountsController extends Controller
         $user = User::find($users_id);
         if(!$user)
         {
-            return response()->json(['message' => 'User not found']);
+            return response()->json(['message' => 'User not found.']);
         }
         // Selecionando todas as contas do usuário informado
         $accounts = Accounts::where('users_id', $users_id)->get();
@@ -344,6 +344,48 @@ class AccountsController extends Controller
         if($accounts)
         {
             return response()->json(['accounts' => $accounts]);
+        }else
+        {
+            return response()->json(['message' => 'error']);
+        }
+    }
+    /*
+   | Check total balance
+   |-----------------------------------------------------------------------
+   | Verifica o saldo total do usuário ( Soma o saldo de todas as contas)
+   |-----------------------------------------------------------------------
+   |  ['users_id' => integer]
+   |
+  */
+    public function check_total_balance($users_id)
+    {
+        // Validando os campos
+        $data           =       array($users_id);
+        $validator      =       Validator::check_empty_fields($data);
+        if($validator['status'])
+        {
+            return $validator['response'];
+        }
+        // Verificando a existência dos dados
+        $user = User::find($users_id);
+        if(!$user)
+        {
+            return response()->json(['message' => 'User not found.']);
+        }
+        // Selecionando as contas do usuário
+        $accounts = Accounts::where('users_id', $users_id)->get();
+        // Somando os saldos
+        $total_balance = 0;
+        foreach ($accounts as $account)
+        {
+            $total_balance += $account->balance;
+        }
+        // Formatando para duas casas decimais
+        $total_balance = number_format($total_balance,2);
+        // Verificando o status da query e informando ao usuário
+        if(isset($total_balance))
+        {
+            return response()->json(['total_balance' => $total_balance]);
         }else
         {
             return response()->json(['message' => 'error']);
