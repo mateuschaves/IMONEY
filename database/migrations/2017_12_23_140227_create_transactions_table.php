@@ -42,7 +42,8 @@ class CreateTransactionsTable extends Migration
 
             $table->integer('is_paid');
             $table->text('type');
-            $table->integer('is_recurrent');
+            $table->integer('is_fixed')->nullable();
+            $table->integer('is_parceled')->nullable();
             $table->integer('is_visible');
 
             $table->timestamps();

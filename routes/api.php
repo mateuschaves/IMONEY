@@ -45,6 +45,8 @@ $api->version('v1', function (Router $api) {
         $api->post('create/categorie/{users_id}/', 'App\\Http\\Controllers\\CategoriesController@create_categories')->name('create.categories');
         $api->post('update/categorie/{users_id}/{categorie_id}', 'App\\Http\\Controllers\\CategoriesController@update_categories')->name('update.categories');
         $api->post('delete/categorie/{users_id}/{categorie_id}', 'App\\Http\\Controllers\\CategoriesController@delete_categories')->name('delete.categories');
+        $api->post('create/transactions/{users_id}/', 'App\\Http\\Controllers\\TransactionsController@create_transaction')->name('create.transaction');
+        $api->post('consult/balance/{users_id}/', 'App\\Http\\Controllers\\AccountsController@check_balance')->name('consult.balance');
     });
 
     $api->get('hello', function() {

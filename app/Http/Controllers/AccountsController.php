@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Accounts;
 use App\Transactions;
+use App\Validator;
 
 class AccountsController extends Controller
 {
@@ -174,7 +175,7 @@ class AccountsController extends Controller
     | ['account_id' => integer ], ['user_id' => integer]
     |
      */
-    public function update_account_balance($account_id, $user_id)
+    public static function update_account_balance($account_id, $user_id)
     {
         // Validando os campos
         if(!$account_id || !$user_id)
@@ -183,7 +184,7 @@ class AccountsController extends Controller
         }
 
         // Selecionando todas as receitas na conta especificada pelo usuário
-        $recipes = Transactions::where('users_id',$user_id)->where('account_id', $account_id)->where('type','recipe')->get();
+        $recipes = Transactions::where('users_id',$user_id)->where('account_id', $account_id)->where('type','recipe')->where('is_paid', 1)->get();
         //dd($recipes);
 
         // Contabilizando as receitas da conta
@@ -195,7 +196,7 @@ class AccountsController extends Controller
         //dd($total_revenue);
 
         // Selecionando todas as despesas na conta especificada pelo usuário
-        $expenses = Transactions::where('users_id',$user_id)->where('account_id', $account_id)->where('type','expense')->get();
+        $expenses = Transactions::where('users_id',$user_id)->where('account_id', $account_id)->where('type','expense')->where('is_paid', 1)->get();
 
         //dd($expenses);
         // Contabilizando as despesas da conta
@@ -248,7 +249,6 @@ class AccountsController extends Controller
         {
             return response()->json(['message' => 'Fill in all the fields'],400);
         }
-
         // Verificando a existêcnia dos id's
         $account = Accounts::find($account_id);
         //dd($account_id);
@@ -257,17 +257,13 @@ class AccountsController extends Controller
         {
                 return response()->json(['message' => 'User or account does not exist']);
         }
-
         // Verificando se a conta é do usuário
-
         if($account->users_id != $user_id)
         {
             return response()->json(['message' => 'You can only delete your account.'],401);
         }
-
         // Deletando a conta
         $delete = Accounts::where('id', $account_id)->where('users_id', $user_id)->delete();
-
         // Verificando o status da query e informando ao usuário
         if($delete)
         {
@@ -275,6 +271,66 @@ class AccountsController extends Controller
         }else
         {
             return response()->json(['message' => 'error'],400);
+        }
+    }
+    /*
+   | Check balance
+   |-----------------------------------------------------------------------
+   | Consulta o saldo da conta
+   |-----------------------------------------------------------------------
+   | ['account_id' => integer ], ['user_id' => integer]
+   |
+    */
+    public function check_balance(Request $request, $users_id)
+    {
+        // Validando os campos
+        $data = array($request['account_id'], $users_id);
+        $validator = Validator::check_empty_fields($data);
+        if(!$validator['status'])
+        {
+            return $validator['response'];
+        }
+
+        // Verificando a existência dos dados informados
+        $account        =       Accounts::find($request['account_id']);
+        $user           =       User::find($users_id);
+        if(!$user || !$account)
+        {
+            return response()->json(['message' => 'User or account does not exist']);
+        }
+        // Verificando se a conta é do usuário
+        if($account->users_id != $users_id)
+        {
+            return response()->json(['message' => ' you can only consult your balance'],400);
+        }
+        // Consultado o saldo
+        $balance = $account->balance;
+        // Verificando o status da query e informando ao usuário
+        if($balance)
+        {
+            return response()->json(['name' => $account->name,'saldo' => $balance]);
+        }else
+        {
+            return response()->json(['message' => 'error']);
+        }
+
+    }
+    /*
+    | Accounts list
+    |-----------------------------------------------------------------------
+    | Lista todas as contas do usuario
+    |-----------------------------------------------------------------------
+    |  ['users_id' => integer]
+    |
+   */
+    public function accounts_list($users_id)
+    {
+        // Validando os campos
+        $data       =   array($users_id);
+        $validator  =   Validator::check_empty_fields($data);
+        if(!$validator['status'])
+        {
+            return $validator['response'];
         }
     }
 
