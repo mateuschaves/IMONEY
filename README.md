@@ -23,6 +23,9 @@ Exemplo da alteração: <br>
 ``DB_USERNAME=user-name-do-banco-de-dados``<br>
 ``DB_PASSWORD=senha-de-acesso``<br>
 
+Feita as alterações, digite o seguinte comando, para criar todas as tabelas:<br>
+
+``php artisan migrate``
 
 # Iniciando o servidor.
 
